@@ -26,47 +26,56 @@ export function CountryList(props) {
 
     useLayoutEffect(() => {
 
-       
-        async function fetchData() {
-            let temp = []
-            const options = {
-                method: 'GET',
-                headers: {
-                    'X-RapidAPI-Key': '365d0f7c94msh64c10d765610e36p140af5jsncf49e4b2133a',
-                    'X-RapidAPI-Host': 'covid-193.p.rapidapi.com'
-                }
-            };
-            let response = await fetch('https://covid-193.p.rapidapi.com/statistics', options)
-            if(response.status == 100){
-               
 
-            }           
-           else  if(response.ok) {
-            // handleToggle();
-               console.log('entrering fetch')
-                myjson = await response.json();
-                
-            } else {
-                alert("HTTP-Error: " + response.status);
+        async function fetchData() {
+
+            let temp = []
+            try {
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'X-RapidAPI-Key': '365d0f7c94msh64c10d765610e36p140af5jsncf49e4b2133a',
+                        'X-RapidAPI-Host': 'covid-193.p.rapidapi.com'
+                    }
+                };
+                let response = await fetch('https://covid-193.p.rapidapi.com/statistics', options)
+                if (response.status === 100) {
+
+
+                }
+                else if (response.ok) {
+                    // handleToggle();
+                    console.log('entrering fetch')
+                    myjson = await response.json();
+
+                } else {
+                    alert("HTTP-Error: " + response.status);
+                }
+
+                myjson.response.forEach((inobject) => {
+
+                    temp.push({ value: inobject.country, label: inobject.country })
+    
+                    if (inobject.country === "All") {
+                        globelrecord.country = inobject.country
+                        globelrecord.totalcases = inobject.cases.total
+                        globelrecord.totalrecovered = inobject.cases.recovered
+                        globelrecord.totaldeaths = inobject.deaths.total
+                    }
+                });
+    
+                Setoptions(temp)
+                props.SetCovidrecord(globelrecord)
+    
+                setdata();
+
+
+            } catch (error) {
+                console.log(error);
             }
 
 
-            myjson.response.forEach((inobject) => {
-
-                temp.push({ value: inobject.country, label: inobject.country })
-
-                if (inobject.country == "All") {
-                    globelrecord.country = inobject.country
-                    globelrecord.totalcases = inobject.cases.total
-                    globelrecord.totalrecovered = inobject.cases.recovered
-                    globelrecord.totaldeaths = inobject.deaths.total
-                }
-            });
-
-            Setoptions(temp)
-            props.SetCovidrecord(globelrecord)
-
-            setdata();
+           
         }
         fetchData();
 
@@ -75,7 +84,7 @@ export function CountryList(props) {
     function setdata() {
         myjson.response.find((alldata) => {
 
-            if (alldata.country == slectcountry) {
+            if (alldata.country === slectcountry) {
                 currentlocalobj.country = alldata.country
                 currentlocalobj.totalcases = alldata.cases.total
                 currentlocalobj.totalrecovered = alldata.cases.recovered
